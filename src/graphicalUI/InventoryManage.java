@@ -57,9 +57,18 @@ public class InventoryManage {
 		HBox bottom = new HBox(newNameTF, newPriceTF, newStockTF, addItemB);
 		bottom.setSpacing(30);
 		
+		searchTF = new TextField();
+		searchTF.setPromptText("Item ID/name");
+		
+		searchB = new Button("Search");
+		
+		HBox top = new HBox(searchTF, searchB);
+		top.setSpacing(30);
+		
 		scene = new BorderPane();
 		scene.setCenter(table);
 		scene.setBottom(bottom);
+		scene.setTop(top);
 		scene.getStylesheets().add(Main.class.getResource("custom.css").toExternalForm());
 	}
 	

@@ -29,7 +29,8 @@ public class CreateAccountAdvanced {
 		title = new Label("Create Account");
 		
 		ObservableList<String> options = FXCollections.observableArrayList("Customer");
-		if(((Employee)user).getPosition() == POSITION.MANAGER) {
+		if(((Employee)user).getPosition() == POSITION.MANAGER || 
+				((Employee)user).getPosition() == POSITION.BOARD) {
 			options.add("Employee");
 			options.add("Manager");
 		}
