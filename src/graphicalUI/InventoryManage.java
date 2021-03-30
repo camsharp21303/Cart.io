@@ -1,5 +1,8 @@
 package graphicalUI;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import application.Main;
@@ -13,17 +16,23 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import types.Employee;
 import types.Item;
 
 public class InventoryManage {
 	private TextField searchTF, newNameTF, newPriceTF, newStockTF;
-	private Button searchB, addItemB, addStockB, minusStockB, deleteItemB;
+	private Button searchB, addItemB, uploadImageB, addStockB, minusStockB, deleteItemB;
 	private TableView<Item> table;
 	private TableColumn<Item, String> numberC, nameC, priceC, stockC;
 	private BorderPane scene;
+	private FileChooser fileChoose;
+	private File imageFile;
+	private Stage window;
 	
-	public InventoryManage(Employee employee) {
+	public InventoryManage(Employee employee, Stage stage) {
+		window = stage;
 		table = new TableView<>();
 		
 		ArrayList<Item> items = new ItemsSQL().getAllItems();
@@ -42,6 +51,10 @@ public class InventoryManage {
 		
 		table.setItems(FXCollections.observableList(items));
 		
+		uploadImageB = new Button("Upload Image");
+		uploadImageB.setOnAction(e -> chooseImage());
+		fileChoose = new FileChooser();
+		
 		newNameTF = new TextField();
 		newNameTF.setPromptText("Item Name");
 		
@@ -54,7 +67,7 @@ public class InventoryManage {
 		addItemB = new Button("Add Item");
 		addItemB.setOnAction(e -> newItem());
 		
-		HBox bottom = new HBox(newNameTF, newPriceTF, newStockTF, addItemB);
+		HBox bottom = new HBox(uploadImageB, newNameTF, newPriceTF, newStockTF, addItemB);
 		bottom.setSpacing(30);
 		
 		searchTF = new TextField();
@@ -69,7 +82,10 @@ public class InventoryManage {
 		scene.setCenter(table);
 		scene.setBottom(bottom);
 		scene.setTop(top);
-		scene.getStylesheets().add(Main.class.getResource("custom.css").toExternalForm());
+	}
+	
+	private void chooseImage() {
+		imageFile = fileChoose.showOpenDialog(window);
 	}
 	
 	public Node getScene() {
@@ -78,7 +94,8 @@ public class InventoryManage {
 	
 	public void newItem() {
 		new ItemsSQL().insertItem(new Item(newNameTF.getText(),
-				"", newPriceTF.getText(), Integer.parseInt(newStockTF.getText())));
+				"", newPriceTF.getText(), Integer.parseInt(newStockTF.getText()), null)
+				, imageFile);
 		ArrayList<Item> items = new ItemsSQL().getAllItems();
 		table.setItems(FXCollections.observableList(items));
 	}

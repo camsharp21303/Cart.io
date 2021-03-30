@@ -25,12 +25,12 @@ public class CreateAccountAdvanced {
 	private VBox scene;
 	private ComboBox<String> newTypeCB;
 	
-	public CreateAccountAdvanced(User user) {
+	public CreateAccountAdvanced(Employee user) {
 		title = new Label("Create Account");
 		
 		ObservableList<String> options = FXCollections.observableArrayList("Customer");
-		if(((Employee)user).getPosition() == POSITION.MANAGER || 
-				((Employee)user).getPosition() == POSITION.BOARD) {
+		if(user.getPosition() == POSITION.MANAGER || 
+				user.getPosition() == POSITION.BOARD) {
 			options.add("Employee");
 			options.add("Manager");
 		}
@@ -71,7 +71,6 @@ public class CreateAccountAdvanced {
 		create.setDefaultButton(true);
 		
 		scene = new VBox(title, newTypeCB, nameTF, emailTF, phoneTF, usernameTF, addressTF, passwordTF, confirmPassTF, create);
-		scene.getStylesheets().add(Main.class.getResource("custom.css").toExternalForm());
 		scene.setStyle("-fx-background-color: #FFFFFF;");
 		scene.setSpacing(10);
 		scene.setAlignment(Pos.CENTER);

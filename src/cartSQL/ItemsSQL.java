@@ -1,5 +1,8 @@
 package cartSQL;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
@@ -25,7 +28,8 @@ public class ItemsSQL extends ParentSQL {
 						results.getString("name"),
 						results.getString("lastSold"),
 						results.getString("price"),
-						results.getInt("stock")));
+						results.getInt("stock"),
+						results.getBytes("image")));
 				System.out.println(items.get(items.size()-1).getName());
 			}
 			close();
@@ -35,16 +39,34 @@ public class ItemsSQL extends ParentSQL {
 		return items;
 	}
 	
-	public boolean insertItem(Item item){
-		String insertQuery = String.format("INSERT INTO items VALUES(nextval('nextitemid'), '%s', '%s', '%s', CURRENT_DATE);", item.getName(), item.getPrice(), item.getStock());
-		return InsertQuery(insertQuery);
+	public boolean insertItem(Item item, File file) {
+		try {
+			connect();
+			FileInputStream stream = new FileInputStream(file);
+			PreparedStatement ps = c.prepareStatement(
+					String.format("INSERT INTO items VALUES(nextval('nextitemid'), '%s', '%s', '%s', CURRENT_DATE, ?);", item.getName(), item.getPrice(), item.getStock()));
+			ps.setBinaryStream(1, stream, file.length());
+			ps.executeUpdate();
+			ps.close();
+			stream.close();
+			c.close();
+		}catch(Exception e) {
+			error(e);
+		}
+		return false;
 	}
-	
-	public boolean insertUser(User user, String password) {
-		String query = String.format(
-				"INSERT INTO customers VALUES(nextval('customernumberseq'), '%s', '%s', '%s', '%s', '%s', '%s', '%s');",
-				user.getFname(), user.getLname(), user.getUsername(), user.getPhone(), user.getEmail(),
-				password, ((Customer)user).getAddress());
-		return InsertQuery(query);
-	}
+
+	//Update data
+	/*public void update() {
+		try {
+			connect();
+			c.setAutoCommit(false);
+			stmt = c.createStatement();
+			String sql = "UPDATE items SET price = 5.00 WHERE id='1';";
+			stmt.executeUpdate(sql);
+			c.commit();
+		}catch(Exception e) {
+			error(e);
+		}
+	}*/
 }

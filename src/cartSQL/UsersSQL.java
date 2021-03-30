@@ -90,8 +90,8 @@ public class UsersSQL extends ParentSQL {
 				System.out.println("login success");
 				Employee.POSITION position = POSITION.STANDARD;
 				String level = employeeResult.getString("level");
-				if(level == "board") position = POSITION.BOARD;
-				else if(level == "manager") position = POSITION.MANAGER;
+				if(level.equals("board")) position = POSITION.BOARD;
+				else if(level.equals("manager")) position = POSITION.MANAGER;
 				return new Employee(
 						employeeResult.getString("number"),
 						employeeResult.getString("fname"), 

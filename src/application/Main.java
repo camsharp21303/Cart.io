@@ -1,5 +1,6 @@
 package application;
 	
+import cartSQL.ItemsSQL;
 import graphicalUI.AppPane;
 import graphicalUI.Login;
 import javafx.application.Application;
@@ -11,7 +12,6 @@ public class Main extends Application{
 	private static Stage window;
 	
 	public static void main(String[] args) {
-		
 		launch(args);
 	}
 
@@ -28,6 +28,10 @@ public class Main extends Application{
 	public static void login(User user) {
 		System.out.println("hello");
 		new AppPane(user, window);
+	}
+	
+	public static void logout() {
+		new Login(window);
 	}
 
 }

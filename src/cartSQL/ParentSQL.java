@@ -47,6 +47,7 @@ abstract class ParentSQL {
 		}
 		return true;
 	}
+	
 	protected void close() {
 		try {
 			stmt.close();
