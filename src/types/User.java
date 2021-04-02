@@ -3,14 +3,16 @@ package types;
 public abstract class User {
 	protected String number, username;
 	protected String fname, lname, phone, email;
+	private byte[] image;
 	
-	protected User(String number, String fname, String lname, String username, String phone, String email){
+	protected User(String number, String fname, String lname, String username, String phone, String email, byte[] image){
 		this.number = number;
 		this.fname = fname;
 		this.lname = lname;
 		this.username = username;
 		this.phone = phone;
 		this.email = email;
+		this.image = image;
 	}
 
 	public String getFname() {
@@ -53,4 +55,11 @@ public abstract class User {
 		return username;
 	}
 	
+	public byte[] getImage() {
+		return image;
+	}
+	
+	public void setImage(byte[] image) {
+		this.image = image;
+	}
 }

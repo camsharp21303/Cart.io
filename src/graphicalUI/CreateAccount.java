@@ -1,5 +1,7 @@
 package graphicalUI;
 
+import java.io.File;
+
 import application.Main;
 import cartSQL.UsersSQL;
 import javafx.geometry.Pos;
@@ -9,18 +11,25 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import types.Customer;
 
 public class CreateAccount {
 	private ImageView logo;
-	private Label title;
+	private Label title, fileName;
 	private TextField nameTF, emailTF, phoneTF, usernameTF, addressTF;
 	private PasswordField passwordTF, confirmPassTF;
-	private Button create;
+	private Button create, uploadImage;
+	private FileChooser fileChoose;
+	private File imageFile;
+	private Stage window;
 	
 	public CreateAccount(Stage stage) {
+		window = stage;
+		fileChoose = new FileChooser();
 		logo = new ImageView(Main.class.getResource("cart.png").toExternalForm());
 		logo.setFitHeight(150);
 		logo.setFitWidth(150);
@@ -55,11 +64,18 @@ public class CreateAccount {
 		confirmPassTF.setPromptText("Confirm Password");
 		confirmPassTF.setMaxWidth(250);
 		
+		fileName = new Label("No Image");
+		uploadImage = new Button("Upload Image");
+		uploadImage.setOnAction(e -> chooseImage());
+		
+		HBox imagePick = new HBox(uploadImage, fileName);
+		imagePick.setAlignment(Pos.CENTER);
+		
 		create = new Button("Create Account");
 		create.setOnAction(e -> createUser());
 		create.setDefaultButton(true);
 		
-		VBox box = new VBox(logo, title, nameTF, emailTF, phoneTF, usernameTF, addressTF, passwordTF, confirmPassTF, create);
+		VBox box = new VBox(logo, title, nameTF, emailTF, phoneTF, usernameTF, addressTF, passwordTF, confirmPassTF, imagePick, create);
 		box.getStylesheets().add(Main.class.getResource("custom.css").toExternalForm());
 		box.setStyle("-fx-background-color: #FFFFFF;");
 		box.setSpacing(10);
@@ -68,6 +84,11 @@ public class CreateAccount {
 		Scene scene = new Scene(box, 800, 600);
 		stage.setScene(scene);
 		stage.show();
+	}
+	
+	private void chooseImage() {
+		imageFile = fileChoose.showOpenDialog(window);
+		fileName.setText(imageFile.getName());
 	}
 	
 	private void createUser() {
@@ -84,9 +105,9 @@ public class CreateAccount {
 		}
 		
 		Customer customer = new Customer(firstName, lastName, usernameTF.getText(), 
-				phoneTF.getText(), emailTF.getText(), addressTF.getText());
+				phoneTF.getText(), emailTF.getText(), addressTF.getText(), null);
 		
-		new UsersSQL().insertUser(customer, passwordTF.getText());
+		new UsersSQL().insertUser(customer, passwordTF.getText(), imageFile);
 		System.out.println("Made user");
 		
 		Main.login(customer);

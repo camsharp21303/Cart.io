@@ -1,6 +1,5 @@
 package graphicalUI;
 
-import application.Main;
 import cartSQL.UsersSQL;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -110,10 +109,10 @@ public class CreateAccountAdvanced {
 			newUser = new Customer(firstName, lastName, usernameTF.getText(), 
 				phoneTF.getText(), 
 				emailTF.getText(), 
-				addressTF.getText());
+				addressTF.getText(), null);
 		}
 		
-		new UsersSQL().insertUser(newUser, passwordTF.getText());
+		new UsersSQL().insertUser(newUser, passwordTF.getText(), null);
 		System.out.println("Made user");
 	}
 }

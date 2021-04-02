@@ -1,14 +1,10 @@
 package cartSQL;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-import types.Customer;
 import types.Item;
-import types.User;
 
 public class ItemsSQL extends ParentSQL {
 
@@ -40,20 +36,8 @@ public class ItemsSQL extends ParentSQL {
 	}
 	
 	public boolean insertItem(Item item, File file) {
-		try {
-			connect();
-			FileInputStream stream = new FileInputStream(file);
-			PreparedStatement ps = c.prepareStatement(
-					String.format("INSERT INTO items VALUES(nextval('nextitemid'), '%s', '%s', '%s', CURRENT_DATE, ?);", item.getName(), item.getPrice(), item.getStock()));
-			ps.setBinaryStream(1, stream, file.length());
-			ps.executeUpdate();
-			ps.close();
-			stream.close();
-			c.close();
-		}catch(Exception e) {
-			error(e);
-		}
-		return false;
+		String sql = String.format("INSERT INTO items VALUES(nextval('nextitemid'), '%s', '%s', '%s', CURRENT_DATE, ?);", item.getName(), item.getPrice(), item.getStock());
+		return InsertQueryImage(sql, file);
 	}
 
 	//Update data

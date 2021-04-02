@@ -46,8 +46,8 @@ public class CatalogHome {
 			else {
 				image = new ImageView(new Image(Main.class.getResourceAsStream("default.png")));
 			}
-			image.setFitHeight(100);
-			image.setFitWidth(100);
+			image.setFitHeight(175);
+			image.setFitWidth(175);
 			image.preserveRatioProperty().set(true);
 			
 			name = new Label(item.getName());

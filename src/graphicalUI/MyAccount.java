@@ -1,32 +1,54 @@
 package graphicalUI;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import application.Main;
-import javafx.geometry.HorizontalDirection;
+import cartSQL.UsersSQL;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import types.Customer;
-import types.Employee;
 import types.User;
 
 public class MyAccount {
 	private BorderPane node;
 	private Label nameL, numberL, addressL, emailL, phoneL;
-	private Button editAddressB, editEmailB, editPhoneB, logoutB;
+	private Button logoutB, editImageB;
+	private ImageView accountImage;
+	private File imageFile;
+	private User user;
 	
 	public MyAccount(User user) {
+		this.user = user;
 		node = new BorderPane();
 		nameL = new Label(user.getFname() + " " + user.getLname());
 		numberL = new Label("Account Number: #" + user.getNumber());
 		emailL = new Label("Email: " + user.getEmail());
 		phoneL = new Label("Phone: " + user.getPhone());
 		
-		editEmailB = new Button("Edit");
-		editPhoneB = new Button("Edit");
+		//editEmailB = new Button("Edit");
+		//editPhoneB = new Button("Edit");
+		
+		if(user.getImage() != null) {
+			accountImage = new ImageView(new Image(new ByteArrayInputStream(user.getImage())));
+		}
+		else {
+			System.out.println("No Imag Found");
+			accountImage = new ImageView(new Image(Main.class.getResourceAsStream("default.png")));
+		}
+		accountImage.setFitHeight(150);
+		accountImage.setFitWidth(150);
+		
+		editImageB = new Button("Edit Image");
+		editImageB.setOnAction(e -> changeImage());
 		
 		logoutB = new Button("Logout");
 		logoutB.setOnAction(e -> Main.logout());
@@ -42,7 +64,23 @@ public class MyAccount {
 			userInfo = new VBox(nameL, numberL, emailL, phoneL);
 		}
 		
+		VBox imageViewer = new VBox(accountImage, editImageB);
+		
+		node.setLeft(imageViewer);
 		node.setCenter(userInfo);
+	}
+	
+	public void changeImage() {
+		FileChooser fileChoose = new FileChooser();
+		imageFile = fileChoose.showOpenDialog(Main.getStage());
+		try {
+			FileInputStream stream = new FileInputStream(imageFile);
+			accountImage.setImage(new Image(stream));
+			new UsersSQL().updateAccountImage(user, imageFile);
+		}catch(FileNotFoundException e){
+			System.out.println("File not found");
+		}
+		
 	}
 	
 	public Node getScene() {

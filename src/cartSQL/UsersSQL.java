@@ -1,5 +1,6 @@
 package cartSQL;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class UsersSQL extends ParentSQL {
 						results.getString("username"),
 						results.getString("phone"),
 						results.getString("email"),
-						results.getString("address")));
+						results.getString("address"), null));
 				System.out.println(customers.get(customers.size()-1).getFname());
 			}
 			close();
@@ -77,14 +78,16 @@ public class UsersSQL extends ParentSQL {
 		try {
 			if(customerResult.next()) {
 				System.out.println("login success");
+				System.out.println(customerResult.getBytes("image") == null);
 				return new Customer(
-						customerResult.getString("number"),
+						customerResult.getString("id"),
 						customerResult.getString("fname"), 
 						customerResult.getString("lname"),
 						customerResult.getString("username"),
 						customerResult.getString("phone"),
 						customerResult.getString("email"),
-						customerResult.getString("address"));
+						customerResult.getString("address"),
+						customerResult.getBytes("image"));
 			}
 			else if(employeeResult.next()) {
 				System.out.println("login success");
@@ -93,7 +96,7 @@ public class UsersSQL extends ParentSQL {
 				if(level.equals("board")) position = POSITION.BOARD;
 				else if(level.equals("manager")) position = POSITION.MANAGER;
 				return new Employee(
-						employeeResult.getString("number"),
+						employeeResult.getString("id"),
 						employeeResult.getString("fname"), 
 						employeeResult.getString("lname"),
 						employeeResult.getString("username"),
@@ -108,22 +111,29 @@ public class UsersSQL extends ParentSQL {
 		return null;
 	}
 	
-	public boolean insertUser(User user, String password) {
+	public boolean insertUser(User user, String password, File imageFile) {
 		String query = "";
 		if(user.getClass() == Employee.class) {
 			query = String.format(
-					"INSERT INTO employees VALUES(nextval('nextemployee'), '%s', '%s', '%s', '%s', '%s', '%s', '%s');",
+					"INSERT INTO employees VALUES(nextval('nextemployee'), '%s', '%s', '%s', '%s', '%s', '%s', '%s', ?);",
 					user.getFname(), user.getLname(), user.getUsername(), user.getPhone(), user.getEmail(),
 					password, ((Employee)user).getPosition().toString().toLowerCase());
 		}
 		else {
 			query = String.format(
-					"INSERT INTO customers VALUES(nextval('nextemployee'), '%s', '%s', '%s', '%s', '%s', '%s', '%s');",
+					"INSERT INTO customers VALUES(nextval('nextemployee'), '%s', '%s', '%s', '%s', '%s', '%s', '%s', ?);",
 					user.getFname(), user.getLname(), user.getUsername(), user.getPhone(), user.getEmail(),
 					password, ((Customer)user).getAddress());
 		}
 		
-		return InsertQuery(query);
+		return InsertQueryImage(query, imageFile);
+	}
+	
+	public boolean updateAccountImage(User user, File file) {
+		if(user instanceof Customer) {
+			return updateImage("customers", user.getNumber(), file);
+		}
+		return false;
 	}
 
 }

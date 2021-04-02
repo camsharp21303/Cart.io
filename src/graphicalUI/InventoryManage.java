@@ -1,11 +1,8 @@
 package graphicalUI;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-import application.Main;
 import cartSQL.ItemsSQL;
 import javafx.collections.FXCollections;
 import javafx.scene.Node;
@@ -23,7 +20,7 @@ import types.Item;
 
 public class InventoryManage {
 	private TextField searchTF, newNameTF, newPriceTF, newStockTF;
-	private Button searchB, addItemB, uploadImageB, addStockB, minusStockB, deleteItemB;
+	private Button searchB, addItemB, uploadImageB;
 	private TableView<Item> table;
 	private TableColumn<Item, String> numberC, nameC, priceC, stockC;
 	private BorderPane scene;

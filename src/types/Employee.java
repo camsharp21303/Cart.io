@@ -8,7 +8,7 @@ public class Employee extends User {
 	private POSITION position;
 	
 	public Employee(String number, String fname, String lname, String username, String phone, String email, POSITION position) {
-		super(number, fname, lname, username, phone, email);
+		super(number, fname, lname, username, phone, email, null);
 		this.position = position;
 	}
 	
