@@ -14,22 +14,19 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import types.Customer;
 
 public class CreateAccount {
-	private ImageView logo;
-	private Label title, fileName;
-	private TextField nameTF, emailTF, phoneTF, usernameTF, addressTF;
-	private PasswordField passwordTF, confirmPassTF;
-	private Button create, uploadImage;
-	private FileChooser fileChoose;
-	private File imageFile;
-	private Stage window;
+	private static TextField nameTF, emailTF, phoneTF, usernameTF, addressTF;
+	private static PasswordField passwordTF, confirmPassTF;
+	private static Label fileName;
+	private static File imageFile;
 	
-	public CreateAccount(Stage stage) {
-		window = stage;
-		fileChoose = new FileChooser();
+	public static void activateCreateAccount() {
+		ImageView logo;
+		Label title;
+		Button create, uploadImage;
+		
 		logo = new ImageView(Main.class.getResource("cart.png").toExternalForm());
 		logo.setFitHeight(150);
 		logo.setFitWidth(150);
@@ -82,16 +79,15 @@ public class CreateAccount {
 		box.setAlignment(Pos.CENTER);
 		
 		Scene scene = new Scene(box, 800, 600);
-		stage.setScene(scene);
-		stage.show();
+		Main.getStage().setScene(scene);
 	}
 	
-	private void chooseImage() {
-		imageFile = fileChoose.showOpenDialog(window);
+	private static void chooseImage() {
+		imageFile = new FileChooser().showOpenDialog(Main.getStage());
 		fileName.setText(imageFile.getName());
 	}
 	
-	private void createUser() {
+	private static void createUser() {
 		if(!passwordTF.getText().equals(confirmPassTF.getText())) return;
 		String firstName = "", lastName = "";
 		String fullName = nameTF.getText();

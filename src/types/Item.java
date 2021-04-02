@@ -9,10 +9,6 @@ public class Item {
 		this.number = number;
 	}
 	
-	public byte[] getImage() {
-		return image;
-	}
-	
 	public Item(String name, String lastSold, String price, int stock, byte[] image) {
 		this.name = name;
 		this.lastSold = lastSold;
@@ -55,5 +51,13 @@ public class Item {
 
 	public String getNumber() {
 		return number;
+	}
+	
+	public byte[] getImage() {
+		return image;
+	}
+	
+	public void setImage(byte[] image) {
+		this.image = image;
 	}
 }

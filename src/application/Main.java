@@ -22,19 +22,18 @@ public class Main extends Application{
 	public void start(Stage stage) throws Exception {
 		window = stage;
 		window.setTitle("Cart.IO");
-		window.getIcons().add(new Image(getClass().getResourceAsStream("cart.png")));
-		new Login(window);
+		window.getIcons().add(new Image(Main.class.getResourceAsStream("cart.png")));
+		Login.activateLogin();
 		
 		window.show();
 	}
 	
 	public static void login(User user) {
 		System.out.println("hello");
-		new AppPane(user, window);
+		AppPane.activateAppPane(user);
 	}
 	
 	public static void logout() {
-		new Login(window);
+		Login.activateLogin();
 	}
-
 }

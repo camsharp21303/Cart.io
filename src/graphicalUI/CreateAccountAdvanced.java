@@ -17,14 +17,15 @@ import types.Employee.POSITION;
 import types.User;
 
 public class CreateAccountAdvanced {
-	private Label title;
-	private TextField nameTF, emailTF, phoneTF, usernameTF, addressTF;
-	private PasswordField passwordTF, confirmPassTF;
-	private Button create;
-	private VBox scene;
-	private ComboBox<String> newTypeCB;
 	
-	public CreateAccountAdvanced(Employee user) {
+	private static TextField nameTF, emailTF, phoneTF, usernameTF, addressTF;
+	private static PasswordField passwordTF, confirmPassTF;
+	private static ComboBox<String> newTypeCB;
+	
+	public static Node getNode(Employee user) {
+		Label title;
+		Button create;
+		
 		title = new Label("Create Account");
 		
 		ObservableList<String> options = FXCollections.observableArrayList("Customer");
@@ -69,17 +70,15 @@ public class CreateAccountAdvanced {
 		create.setOnAction(e -> createUser());
 		create.setDefaultButton(true);
 		
-		scene = new VBox(title, newTypeCB, nameTF, emailTF, phoneTF, usernameTF, addressTF, passwordTF, confirmPassTF, create);
+		VBox scene = new VBox(title, newTypeCB, nameTF, emailTF, phoneTF, usernameTF, addressTF, passwordTF, confirmPassTF, create);
 		scene.setStyle("-fx-background-color: #FFFFFF;");
 		scene.setSpacing(10);
 		scene.setAlignment(Pos.CENTER);
-	}
-	
-	public Node getNode() {
+		
 		return scene;
 	}
 	
-	private void createUser() {
+	private static void createUser() {
 		if(!passwordTF.getText().equals(confirmPassTF.getText())) return;
 		String firstName = "", lastName = "";
 		String fullName = nameTF.getText();

@@ -10,16 +10,16 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import types.User;
 
 public class Login {
-	private TextField username, password;
-	private Button login;
-	private ImageView logo;
-	private Hyperlink createAccount;
+	private static TextField username, password;
 	
-	public Login(Stage window) {
+	public static void activateLogin() {
+		Button login;
+		ImageView logo;
+		Hyperlink createAccount;
+		
 		username = new TextField();
 		username.setPromptText("Username/Email/Phone");
 		username.setMaxWidth(250);
@@ -38,7 +38,7 @@ public class Login {
 		logo.setFitWidth(150);
 		
 		createAccount = new Hyperlink("Create Account");
-		createAccount.setOnAction(e -> new CreateAccount(window));
+		createAccount.setOnAction(e -> CreateAccount.activateCreateAccount());
 		
 		VBox box = new VBox(logo, username, password, login, createAccount);
 		box.getStylesheets().add(Main.class.getResource("custom.css").toExternalForm());
@@ -47,10 +47,10 @@ public class Login {
 		box.setAlignment(Pos.CENTER);
 		
 		Scene scene = new Scene(box, 800, 600);
-		window.setScene(scene);
+		Main.getStage().setScene(scene);
 	}
 	
-	public void login() {
+	public static void login() {
 		String userString = username.getText();
 		String passString = password.getText();
 		User user = new UsersSQL().login(userString, passString);

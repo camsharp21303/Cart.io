@@ -3,6 +3,7 @@ package graphicalUI;
 import java.io.File;
 import java.util.ArrayList;
 
+import application.Main;
 import cartSQL.ItemsSQL;
 import javafx.collections.FXCollections;
 import javafx.scene.Node;
@@ -14,31 +15,31 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import types.Employee;
 import types.Item;
 
 public class InventoryManage {
-	private TextField searchTF, newNameTF, newPriceTF, newStockTF;
-	private Button searchB, addItemB, uploadImageB;
-	private TableView<Item> table;
-	private TableColumn<Item, String> numberC, nameC, priceC, stockC;
-	private BorderPane scene;
-	private FileChooser fileChoose;
-	private File imageFile;
-	private Stage window;
+	private static TextField searchTF, newNameTF, newPriceTF, newStockTF;
+	private static File imageFile;
+	private static TableView<Item> table;
 	
-	public InventoryManage(Employee employee, Stage stage) {
-		window = stage;
+	public static Node getNode(Employee employee) {
+		Button searchB, addItemB, uploadImageB;
+		TableColumn<Item, String> numberC, nameC, priceC, stockC;
+		
 		table = new TableView<>();
 		
 		ArrayList<Item> items = new ItemsSQL().getAllItems();
+		
 		numberC = new TableColumn<>("Item Number");
 		numberC.setCellValueFactory(new PropertyValueFactory<>("number"));
 		table.getColumns().add(numberC);
-		 nameC = new TableColumn<>("Item Name");
+		
+		nameC = new TableColumn<>("Item Name");
 		nameC.setCellValueFactory(new PropertyValueFactory<>("name"));
+		nameC.isEditable();
 		table.getColumns().add(nameC);
+		
 		priceC = new TableColumn<>("Price");
 		priceC.setCellValueFactory(new PropertyValueFactory<>("price"));
 		table.getColumns().add(priceC);
@@ -50,7 +51,6 @@ public class InventoryManage {
 		
 		uploadImageB = new Button("Upload Image");
 		uploadImageB.setOnAction(e -> chooseImage());
-		fileChoose = new FileChooser();
 		
 		newNameTF = new TextField();
 		newNameTF.setPromptText("Item Name");
@@ -75,21 +75,19 @@ public class InventoryManage {
 		HBox top = new HBox(searchTF, searchB);
 		top.setSpacing(30);
 		
-		scene = new BorderPane();
+		BorderPane scene = new BorderPane();
 		scene.setCenter(table);
 		scene.setBottom(bottom);
 		scene.setTop(top);
-	}
-	
-	private void chooseImage() {
-		imageFile = fileChoose.showOpenDialog(window);
-	}
-	
-	public Node getScene() {
+		
 		return scene;
 	}
 	
-	public void newItem() {
+	private static void chooseImage() {
+		imageFile = new FileChooser().showOpenDialog(Main.getStage());
+	}
+	
+	public static void newItem() {
 		new ItemsSQL().insertItem(new Item(newNameTF.getText(),
 				"", newPriceTF.getText(), Integer.parseInt(newStockTF.getText()), null)
 				, imageFile);

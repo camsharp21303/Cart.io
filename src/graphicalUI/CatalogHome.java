@@ -16,9 +16,8 @@ import javafx.scene.layout.VBox;
 import types.Item;
 
 public class CatalogHome {
-	private FlowPane node;
-	
-	public CatalogHome() {
+	public static Node getNode() {
+		FlowPane node;
 		ArrayList<Item> items = new ArrayList<>();
 		items = new ItemsSQL().getAllItems();
 		
@@ -27,13 +26,11 @@ public class CatalogHome {
 		for(Item i : items) {
 			node.getChildren().add(new ItemView(i));
 		}
-	}
-	
-	public Node getNode() {
+		
 		return node;
 	}
 	
-	private class ItemView extends VBox{
+	private static class ItemView extends VBox{
 		private Label name, price;
 		private Button addCart;
 		private ImageView image;
