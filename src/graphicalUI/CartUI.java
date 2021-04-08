@@ -38,14 +38,21 @@ public class CartUI {
 			new OrdersSQL().createCart(customer);
 			cart = new OrdersSQL().getCart(customer);
 		}
+		Button purchase = new Button("Purchase");
+		purchase.setOnAction(e -> purchase());
 		
+		vbox.getChildren().add(purchase);
 		
 		return vbox;
 	}
 	
+	private static void purchase() {
+		
+	}
+	
 	public static void addItem(Item item) {
 		cart.addItem(item);
-		vbox.getChildren().add(new ItemView(item));
+		vbox.getChildren().add(0, new ItemView(item));
 	}
 	
 	private static class ItemView extends HBox{

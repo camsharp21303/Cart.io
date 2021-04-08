@@ -22,6 +22,9 @@ public class Cart {
 					this.items.add(new ItemsSQL().getItem(ids[i]));
 				}
 			}
+			else {
+				System.out.println("No items found in cart");
+			}
 		}catch(Exception e) {
 			e.printStackTrace();
 			System.err.println(e.getClass().getName() + ":" + e.getMessage());

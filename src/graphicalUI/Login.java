@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
@@ -14,6 +15,8 @@ import types.User;
 
 public class Login {
 	private static TextField username, password;
+	private static Label loginFail;
+	private static VBox box;
 	
 	public static void activateLogin() {
 		Button login;
@@ -33,6 +36,9 @@ public class Login {
 		login.setOnAction(e -> login());
 		login.setDefaultButton(true);
 		
+		loginFail = new Label("Failed to find an account with that information");
+		loginFail.setId("failText");
+		
 		logo = new ImageView(Main.class.getResource("cart.png").toExternalForm());
 		logo.setFitHeight(150);
 		logo.setFitWidth(150);
@@ -40,9 +46,8 @@ public class Login {
 		createAccount = new Hyperlink("Create Account");
 		createAccount.setOnAction(e -> CreateAccount.activateCreateAccount());
 		
-		VBox box = new VBox(logo, username, password, login, createAccount);
+		box = new VBox(logo, username, password, login, createAccount);
 		box.getStylesheets().add(Main.class.getResource("custom.css").toExternalForm());
-		box.setStyle("-fx-background-color: #FFFFFF;");
 		box.setSpacing(50);
 		box.setAlignment(Pos.CENTER);
 		
@@ -55,5 +60,8 @@ public class Login {
 		String passString = password.getText();
 		User user = new UsersSQL().login(userString, passString);
 		if(user != null) Main.login(user);
+		else {
+			box.getChildren().add(1, loginFail);
+		}
 	}
 }

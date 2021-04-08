@@ -26,7 +26,6 @@ public class ItemsSQL extends ParentSQL {
 						results.getString("price"),
 						results.getInt("stock"),
 						results.getBytes("image")));
-				System.out.println(items.get(items.size()-1).getName());
 			}
 			close();
 		} catch (Exception e) {

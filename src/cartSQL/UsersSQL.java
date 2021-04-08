@@ -31,7 +31,6 @@ public class UsersSQL extends ParentSQL {
 						results.getString("phone"),
 						results.getString("email"),
 						results.getString("address"), null));
-				System.out.println(customers.get(customers.size()-1).getFname());
 			}
 			close();
 		} catch (Exception e) {
@@ -58,7 +57,6 @@ public class UsersSQL extends ParentSQL {
 						results.getString("phone"),
 						results.getString("email"),
 						position));
-				System.out.println(employees.get(employees.size()-1).getFname());
 			}
 			close();
 		} catch (Exception e) {
@@ -77,8 +75,6 @@ public class UsersSQL extends ParentSQL {
 		
 		try {
 			if(customerResult.next()) {
-				System.out.println("login success");
-				System.out.println(customerResult.getBytes("image") == null);
 				return new Customer(
 						customerResult.getString("id"),
 						customerResult.getString("fname"), 
@@ -90,7 +86,6 @@ public class UsersSQL extends ParentSQL {
 						customerResult.getBytes("image"));
 			}
 			else if(employeeResult.next()) {
-				System.out.println("login success");
 				Employee.POSITION position = POSITION.STANDARD;
 				String level = employeeResult.getString("level");
 				if(level.equals("board")) position = POSITION.BOARD;
