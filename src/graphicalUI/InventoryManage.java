@@ -6,15 +6,20 @@ import java.util.ArrayList;
 import application.Main;
 import cartSQL.ItemsSQL;
 import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
+import javafx.util.Callback;
 import types.Employee;
 import types.Item;
 
@@ -28,6 +33,7 @@ public class InventoryManage {
 		TableColumn<Item, String> numberC, nameC, priceC, stockC;
 		
 		table = new TableView<>();
+		table.setEditable(true);
 		
 		ArrayList<Item> items = new ItemsSQL().getAllItems();
 		
@@ -42,10 +48,57 @@ public class InventoryManage {
 		
 		priceC = new TableColumn<>("Price");
 		priceC.setCellValueFactory(new PropertyValueFactory<>("price"));
+		priceC.setCellFactory(TextFieldTableCell.forTableColumn());
+		priceC.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Item,String>>() {
+			@Override
+			public void handle(CellEditEvent<Item, String> arg0) {
+				new ItemsSQL().editItem("price", 
+						arg0.getTableView().getItems().get(arg0.getTablePosition().getRow()).getNumber()
+						, arg0.getNewValue());
+			}
+		});
 		table.getColumns().add(priceC);
+		
 		stockC = new TableColumn<>("Stock");
 		stockC.setCellValueFactory(new PropertyValueFactory<>("stock"));
+		stockC.setCellFactory(TextFieldTableCell.forTableColumn());
+		stockC.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Item,String>>() {
+			@Override
+			public void handle(CellEditEvent<Item, String> arg0) {
+				new ItemsSQL().editItem("stock", 
+						arg0.getTableView().getItems().get(arg0.getTablePosition().getRow()).getNumber()
+						, arg0.getNewValue());
+				
+			}
+		});
 		table.getColumns().add(stockC);
+		
+		TableColumn<Item, Void> deleteC = new TableColumn<Item, Void>("Delete");
+		Callback<TableColumn<Item, Void>, TableCell<Item, Void>> cellFactory = new Callback<TableColumn<Item,Void>, TableCell<Item,Void>>() {
+
+			@Override
+			public TableCell<Item, Void> call(TableColumn<Item, Void> arg0) {
+				TableCell<Item, Void> cell = new TableCell<Item, Void>() {
+					private Button del = new Button("Delete"); {
+						del.setOnAction(e -> {
+							
+						});
+					}
+					@Override
+                    public void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(del);
+                        }
+                    }
+                };
+				return cell;
+			}
+		};
+		deleteC.setCellFactory(cellFactory);
+		table.getColumns().add(deleteC);
 		
 		table.setItems(FXCollections.observableList(items));
 		

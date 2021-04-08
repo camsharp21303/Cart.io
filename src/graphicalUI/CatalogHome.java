@@ -34,9 +34,11 @@ public class CatalogHome {
 		private Label name, price;
 		private Button addCart;
 		private ImageView image;
+		private Item item;
 		
 		public ItemView(Item item){
 			super();
+			this.item = item;
 			if(item.getImage() != null) {
 				image = new ImageView(new Image(new ByteArrayInputStream(item.getImage())));
 			}
@@ -50,12 +52,17 @@ public class CatalogHome {
 			name = new Label(item.getName());
 			price = new Label(item.getPrice());
 			addCart = new Button("Add To Cart");
+			addCart.setOnAction(e-> addCart());
 			
 			getChildren().add(image);
 			getChildren().add(name);
 			getChildren().add(price);
 			getChildren().add(addCart);
 			setAlignment(Pos.TOP_CENTER);
+		}
+		
+		private void addCart() {
+			CartUI.addItem(item);
 		}
 	}
 }

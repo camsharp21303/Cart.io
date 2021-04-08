@@ -20,7 +20,7 @@ public class AppPane {
 		
 		if (user instanceof Customer) {
 			home = new Tab("Home", CatalogHome.getNode());
-			cart = new Tab("Cart");
+			cart = new Tab("Cart", CartUI.getNode((Customer)user));
 			tabbedPane.getTabs().add(home);
 			tabbedPane.getTabs().add(cart);
 		}
