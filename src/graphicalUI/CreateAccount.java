@@ -103,7 +103,7 @@ public class CreateAccount {
 		Customer customer = new Customer(firstName, lastName, usernameTF.getText(), 
 				phoneTF.getText(), emailTF.getText(), addressTF.getText(), null);
 		
-		new UsersSQL().insertUser(customer, passwordTF.getText(), imageFile);
+		UsersSQL.insertUser(customer, passwordTF.getText(), imageFile);
 		System.out.println("Made user");
 		
 		Main.login(customer);

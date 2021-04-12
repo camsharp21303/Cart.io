@@ -27,7 +27,7 @@ public class CartUI {
 	
 	public static Node getNode(Customer customer) {
 		CartUI.customer = customer;
-		cart = new OrdersSQL().getCart(customer);
+		cart = OrdersSQL.getCart(customer);
 		
 		vbox = new VBox();
 		
@@ -45,8 +45,8 @@ public class CartUI {
 			}
 		}
 		else {
-			new OrdersSQL().createCart(customer);
-			cart = new OrdersSQL().getCart(customer);
+			OrdersSQL.createCart(customer);
+			cart = OrdersSQL.getCart(customer);
 		}
 		Button purchase = new Button("Purchase");
 		purchase.setOnAction(e -> purchase());
@@ -65,7 +65,7 @@ public class CartUI {
 		
 		Optional<String> result = dialog.showAndWait();
 		if(result.isPresent()) {
-			new OrdersSQL().addOrder(customer, cart.getItems(), result.get());
+			OrdersSQL.addOrder(customer, cart.getItems(), result.get());
 		}
 	}
 	

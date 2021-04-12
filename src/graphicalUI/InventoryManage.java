@@ -1,11 +1,11 @@
 package graphicalUI;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import application.Main;
 import cartSQL.ItemsSQL;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -27,6 +27,7 @@ public class InventoryManage {
 	private static TextField searchTF, newNameTF, newPriceTF, newStockTF;
 	private static File imageFile;
 	private static TableView<Item> table;
+	private static ObservableList<Item> items;
 	
 	public static Node getNode(Employee employee) {
 		Button searchB, addItemB, uploadImageB;
@@ -35,7 +36,7 @@ public class InventoryManage {
 		table = new TableView<>();
 		table.setEditable(true);
 		
-		ArrayList<Item> items = new ItemsSQL().getAllItems();
+		items = ItemsSQL.getAllItems();
 		
 		numberC = new TableColumn<>("Item Number");
 		numberC.setCellValueFactory(new PropertyValueFactory<>("number"));
@@ -52,7 +53,7 @@ public class InventoryManage {
 		priceC.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Item,String>>() {
 			@Override
 			public void handle(CellEditEvent<Item, String> arg0) {
-				new ItemsSQL().editItem("price", 
+				ItemsSQL.editItem("price", 
 						arg0.getTableView().getItems().get(arg0.getTablePosition().getRow()).getNumber()
 						, arg0.getNewValue().toString());
 			}
@@ -65,7 +66,7 @@ public class InventoryManage {
 		stockC.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Item,String>>() {
 			@Override
 			public void handle(CellEditEvent<Item, String> arg0) {
-				new ItemsSQL().editItem("stock", 
+				ItemsSQL.editItem("stock", 
 						arg0.getTableView().getItems().get(arg0.getTablePosition().getRow()).getNumber()
 						, arg0.getNewValue());
 				
@@ -81,7 +82,7 @@ public class InventoryManage {
 				TableCell<Item, Void> cell = new TableCell<Item, Void>() {
 					private Button del = new Button("Delete"); {
 						del.setOnAction(e -> {
-							new ItemsSQL().removeItem(getTableView().getItems().get(getIndex()));
+							ItemsSQL.removeItem(getTableView().getItems().get(getIndex()));
 							getTableView().getItems().remove(getIndex());
 						});
 					}
@@ -101,7 +102,7 @@ public class InventoryManage {
 		deleteC.setCellFactory(cellFactory);
 		table.getColumns().add(deleteC);
 		
-		table.setItems(FXCollections.observableList(items));
+		table.setItems(items);
 		
 		uploadImageB = new Button("Upload Image");
 		uploadImageB.setOnAction(e -> chooseImage());
@@ -125,6 +126,8 @@ public class InventoryManage {
 		searchTF.setPromptText("Item ID/name");
 		
 		searchB = new Button("Search");
+		searchB.setOnAction(e -> search());
+		searchB.setDefaultButton(true);
 		
 		HBox top = new HBox(searchTF, searchB);
 		top.setSpacing(30);
@@ -137,17 +140,43 @@ public class InventoryManage {
 		return scene;
 	}
 	
+	private static void search() {
+		String query = searchTF.getText().toUpperCase();
+		int index = -1;
+		
+		if(query.contains("[a-zA-Z]+")) {
+			for(int i = 0; i < table.getItems().size(); i++) {
+				if(table.getItems().get(i).getName().toUpperCase().contains(query)) {
+					index = i;
+					break;
+				}
+			}
+		}
+		else {
+			for(int i = 0; i < table.getItems().size(); i++) {
+				if(table.getItems().get(i).getNumber().toUpperCase().contains(query)) {
+					index = i;
+					break;
+				}
+			}
+		}
+		
+		if(index >= 0) {
+			table.getSelectionModel().select(index);
+		}
+	}
+	
 	private static void chooseImage() {
 		imageFile = new FileChooser().showOpenDialog(Main.getStage());
 	}
 	
 	public static void newItem() {
-		new ItemsSQL().insertItem(
+		ItemsSQL.insertItem(
 				new Item(newNameTF.getText(),
 				Float.parseFloat(newPriceTF.getText()), 
 				Integer.parseInt(newStockTF.getText()), null),
 				imageFile);
-		ArrayList<Item> items = new ItemsSQL().getAllItems();
+		ObservableList<Item> items = ItemsSQL.getAllItems();
 		table.setItems(FXCollections.observableList(items));
 	}
 }

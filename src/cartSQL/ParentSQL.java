@@ -10,22 +10,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 abstract class ParentSQL {
-	protected Connection c;
-	protected Statement stmt;
+	protected static Connection c;
+	protected static Statement stmt;
 	
-	protected abstract String getDataBase();
-	
-	protected void connect() {
+	protected static void connect(String database) {
 		try {
 			Class.forName("org.postgresql.Driver");
-			c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/" + getDataBase(), "postgres", "darth129");
+			c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/" + database, "postgres", "darth129");
 		}catch(Exception e) {
 			error(e);
 		}
 	}
 	
-	protected ResultSet readQuery(String sql) {
-		connect();
+	protected static ResultSet readQuery(String sql, String database) {
+		connect(database);
 		try {
 			stmt = c.createStatement();
 			return stmt.executeQuery(sql);
@@ -35,9 +33,9 @@ abstract class ParentSQL {
 		}
 	}
 	
-	protected boolean InsertQuery(String sql) {
+	protected static boolean InsertQuery(String sql, String database) {
 		try {
-			connect();
+			connect(database);
 			c.setAutoCommit(false);
 			stmt = c.createStatement();
 			stmt.executeUpdate(sql);
@@ -51,9 +49,9 @@ abstract class ParentSQL {
 		return true;
 	}
 	
-	protected boolean InsertQueryImage(String sql, File file) {
+	protected static boolean InsertQueryImage(String sql, File file, String database) {
 		try {
-			connect();
+			connect(database);
 			FileInputStream stream = new FileInputStream(file);
 			PreparedStatement ps = c.prepareStatement(sql);
 			ps.setBinaryStream(1, stream, file.length());
@@ -68,7 +66,7 @@ abstract class ParentSQL {
 		return false;
 	}
 	
-	protected void close() {
+	protected static void close() {
 		try {
 			stmt.close();
 			c.close();
@@ -77,26 +75,15 @@ abstract class ParentSQL {
 		}
 	}
 	
-	protected void error(Exception e) {
+	protected static void error(Exception e) {
 		e.printStackTrace();
 		System.err.println(e.getClass().getName() + ":" + e.getMessage());
 		System.exit(0);
 	}
 	
-	/*protected void update(String table, String key, Object value) {
+	protected static boolean updateImage(String table, String id, File file, String database) {
 		try {
-			connect();
-			c.setAutoCommit(false);
-			stmt = c.createStatement();
-			String sql = String.format(, null)
-		}catch(Exception e) {
-			error(e);
-		}
-	}*/
-	
-	protected boolean updateImage(String table, String id, File file) {
-		try {
-			connect();
+			connect(database);
 			FileInputStream stream = new FileInputStream(file);
 			PreparedStatement ps = c.prepareStatement(String.format("UPDATE %s SET image = ? WHERE id='%s';", table, id));
 			ps.setBinaryStream(1, stream, file.length());

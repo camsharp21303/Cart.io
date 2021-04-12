@@ -76,7 +76,7 @@ public class MyAccount {
 		try {
 			FileInputStream stream = new FileInputStream(imageFile);
 			accountImage.setImage(new Image(stream));
-			new UsersSQL().updateAccountImage(user, imageFile);
+			UsersSQL.updateAccountImage(user, imageFile);
 		}catch(FileNotFoundException e){
 			System.out.println("File not found");
 		}

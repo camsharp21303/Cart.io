@@ -111,7 +111,7 @@ public class CreateAccountAdvanced {
 				addressTF.getText(), null);
 		}
 		
-		new UsersSQL().insertUser(newUser, passwordTF.getText(), null);
+		UsersSQL.insertUser(newUser, passwordTF.getText(), null);
 		System.out.println("Made user");
 	}
 }

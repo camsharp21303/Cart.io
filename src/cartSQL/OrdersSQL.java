@@ -12,15 +12,10 @@ import types.Order.ORDER_STAT;
 
 public class OrdersSQL extends ParentSQL {
 
-	@Override
-	protected String getDataBase() {
-		return "collections";
-	}
-
-	public ArrayList<Order> getAllOrders() {
+	public static ArrayList<Order> getAllOrders() {
 		ArrayList<Order> orders = new ArrayList<>();
 		try {
-			ResultSet results = readQuery("SELECT * FROM orders");
+			ResultSet results = readQuery("SELECT * FROM orders", "collections");
 			
 			while(results.next()) {
 				orders.add(new Order(
@@ -38,14 +33,14 @@ public class OrdersSQL extends ParentSQL {
 		return orders;
 	}
 	
-	public void addOrder(Customer customer, ArrayList<Item> items, String address) {
+	public static void addOrder(Customer customer, ArrayList<Item> items, String address) {
 		try {
 			double total = 0;
 			for(Item i : items) {
 				total += i.getPrice();
 			}
 			
-			connect();
+			connect("collections");
 			PreparedStatement ps = c.prepareStatement(String.format("INSERT INTO orders VALUES(nextval('orderid'), '%s', '%s', ?, %s, '%s');", 
 					customer.getNumber(), Order.ORDER_STAT.Processing.toString(), total, address));
 			ps.setArray(1, c.createArrayOf("char", items.toArray()));
@@ -57,9 +52,9 @@ public class OrdersSQL extends ParentSQL {
 		}
 	}
 	
-	public void setItems(Customer customer, String[] items) {
+	public static void setItems(Customer customer, String[] items) {
 		try {
-			connect();
+			connect("collections");
 			PreparedStatement ps = c.prepareStatement(String.format("UPDATE carts SET items = ? WHERE customerid='%s';", customer.getNumber()));
 			ps.setArray(1, c.createArrayOf("char", items));
 			ps.executeUpdate();
@@ -70,10 +65,14 @@ public class OrdersSQL extends ParentSQL {
 		}
 	}
 	
-	public Cart getCart(Customer customer){
+	public static boolean updateOrderStatus(Order order, ORDER_STAT status) {
+		return InsertQuery(String.format("UPDATE orders SET status='%s' WHERE id='%s';", status.toString(), order.getId()), "collections");
+	}
+	
+	public static Cart getCart(Customer customer){
 		
 		try {
-			ResultSet results = readQuery("SELECT * FROM carts WHERE customerid='" + customer.getNumber() + "';");
+			ResultSet results = readQuery("SELECT * FROM carts WHERE customerid='" + customer.getNumber() + "';", "collections");
 			
 			while(results.next()) {
 				Cart cart = new Cart(customer, results.getString("total"), results.getArray("items"));
@@ -87,12 +86,12 @@ public class OrdersSQL extends ParentSQL {
 		return null;
 	}
 	
-	public boolean createCart(Customer customer) {
+	public static boolean createCart(Customer customer) {
 		String query = "";
 		
 		query = String.format(
 				"INSERT INTO carts VALUES('%s', '0.00', NULL);", customer.getNumber());
 		
-		return InsertQuery(query);
+		return InsertQuery(query, "collections");
 	}
 }

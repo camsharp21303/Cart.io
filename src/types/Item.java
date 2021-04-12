@@ -2,16 +2,16 @@ package types;
 
 public class Item {
 	private String number, name;
-	private float price;
+	private double price;
 	private int stock;
 	private byte[] image;
 	
-	public Item(String number, String name, float price, int stock, byte[] image) {
+	public Item(String number, String name, double price, int stock, byte[] image) {
 		this(name, price, stock, image);
 		this.number = number;
 	}
 	
-	public Item(String name, float price, int stock, byte[] image) {
+	public Item(String name, double price, int stock, byte[] image) {
 		this.name = name;
 		this.price = price;
 		this.stock = stock;
@@ -26,7 +26,7 @@ public class Item {
 		this.name = name;
 	}
 
-	public float getPrice() {
+	public double getPrice() {
 		return price;
 	}
 	
@@ -35,7 +35,7 @@ public class Item {
 	}
 
 	public String getPriceString() {
-		return Float.toString(this.price);
+		return Double.toString(this.price);
 	}
 	
 	public void setStockString(String stock) {

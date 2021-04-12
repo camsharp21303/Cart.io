@@ -11,16 +11,11 @@ import types.Employee.POSITION;
 import types.User;
 
 public class UsersSQL extends ParentSQL {
-
-	@Override
-	protected String getDataBase() {
-		return "users";
-	}
 	
-	public ArrayList<Customer> getAllCustomers() {
+	public static ArrayList<Customer> getAllCustomers() {
 		ArrayList<Customer> customers = new ArrayList<>();
 		try {
-			ResultSet results = readQuery("SELECT * FROM CUSTOMERS");
+			ResultSet results = readQuery("SELECT * FROM CUSTOMERS", "users");
 			
 			while(results.next()) {
 				customers.add(new Customer(
@@ -39,10 +34,10 @@ public class UsersSQL extends ParentSQL {
 		return customers;
 	}
 	
-	public ArrayList<Employee> getAllEmployees() {
+	public static ArrayList<Employee> getAllEmployees() {
 		ArrayList<Employee> employees = new ArrayList<>();
 		try {
-			ResultSet results = readQuery("SELECT * FROM EMPLOYEES");
+			ResultSet results = readQuery("SELECT * FROM EMPLOYEES", "users");
 			
 			while(results.next()) {
 				Employee.POSITION position = POSITION.STANDARD;
@@ -65,13 +60,13 @@ public class UsersSQL extends ParentSQL {
 		return employees;
 	}
 	
-	public User login(String loginID, String password) {
+	public static User login(String loginID, String password) {
 		String column = "username";
 		if(loginID.contains("@") && loginID.contains(".")) column = "email";
 		if(loginID.matches("[0-9]+") && loginID.length() == 10) column = "phone";
 		
-		ResultSet customerResult = readQuery("SELECT * FROM customers WHERE " + column + "='" + loginID + "' AND password='" + password + "';");
-		ResultSet employeeResult = readQuery("SELECT * FROM employees WHERE " + column + "='" + loginID + "' AND password='" + password + "';");
+		ResultSet customerResult = readQuery("SELECT * FROM customers WHERE " + column + "='" + loginID + "' AND password='" + password + "';", "users");
+		ResultSet employeeResult = readQuery("SELECT * FROM employees WHERE " + column + "='" + loginID + "' AND password='" + password + "';", "users");
 		
 		try {
 			if(customerResult.next()) {
@@ -106,7 +101,7 @@ public class UsersSQL extends ParentSQL {
 		return null;
 	}
 	
-	public boolean insertUser(User user, String password, File imageFile) {
+	public static boolean insertUser(User user, String password, File imageFile) {
 		String query = "";
 		if(user.getClass() == Employee.class) {
 			query = String.format(
@@ -121,12 +116,12 @@ public class UsersSQL extends ParentSQL {
 					password, ((Customer)user).getAddress());
 		}
 		
-		return InsertQueryImage(query, imageFile);
+		return InsertQueryImage(query, imageFile, "users");
 	}
 	
-	public boolean updateAccountImage(User user, File file) {
+	public static boolean updateAccountImage(User user, File file) {
 		if(user instanceof Customer) {
-			return updateImage("customers", user.getNumber(), file);
+			return updateImage("customers", user.getNumber(), file, "users");
 		}
 		return false;
 	}

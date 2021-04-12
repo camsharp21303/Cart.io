@@ -8,12 +8,15 @@ import javafx.stage.Stage;
 import types.User;
 
 public class Main extends Application{
+	//window handle
 	private static Stage window;
 	
+	//launch app
 	public static void main(String[] args) {
 		launch(args);
 	}
 	
+	//returns window handle
 	public static Stage getStage() {
 		return window;
 	}

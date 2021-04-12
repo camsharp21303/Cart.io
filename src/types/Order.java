@@ -4,7 +4,6 @@ import java.sql.Array;
 import java.util.ArrayList;
 
 import cartSQL.ItemsSQL;
-import javafx.collections.ObservableList;
 
 public class Order {
 	public enum ORDER_STAT{

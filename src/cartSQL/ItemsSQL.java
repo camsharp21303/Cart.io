@@ -4,25 +4,22 @@ import java.io.File;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import types.Item;
 
 public class ItemsSQL extends ParentSQL {
 
-	@Override
-	protected String getDataBase() {
-		return "inventory";
-	}
-
-	public ArrayList<Item> getAllItems() {
+	public static ObservableList<Item> getAllItems() {
 		ArrayList<Item> items = new ArrayList<>();
 		try {
-			ResultSet results = readQuery("SELECT * FROM items");
+			ResultSet results = readQuery("SELECT * FROM items", "inventory");
 			
 			while(results.next()) {
 				items.add(new Item(
 						results.getString("id"),
 						results.getString("name"),
-						results.getFloat("price"),
+						results.getDouble("price"),
 						results.getInt("stock"),
 						results.getBytes("image")));
 			}
@@ -30,18 +27,18 @@ public class ItemsSQL extends ParentSQL {
 		} catch (Exception e) {
 			error(e);
 		}
-		return items;
+		return FXCollections.observableList(items);
 	}
 	
-	public Item getItem(String itemID) {
+	public static Item getItem(String itemID) {
 		try {
-			ResultSet results = readQuery("SELECT * FROM items WHERE id='" + itemID +"';");
+			ResultSet results = readQuery("SELECT * FROM items WHERE id='" + itemID +"';", "inventory");
 			
 			while(results.next()) {
 				return new Item(
 						results.getString("id"),
 						results.getString("name"),
-						results.getFloat("price"),
+						results.getDouble("price"),
 						results.getInt("stock"),
 						results.getBytes("image"));
 			}
@@ -53,40 +50,16 @@ public class ItemsSQL extends ParentSQL {
 		return null;
 	}
 	
-	public boolean editItem(String key, String id, String value) {
-		try {
-			connect();
-			c.setAutoCommit(false);
-			stmt = c.createStatement();
-			stmt.executeUpdate(String.format("UPDATE items SET %s='%s' WHERE id='%s';", key, value, id));
-			c.commit();
-			return true;
-		}catch(Exception e) {
-			error(e);
-		}
-		return false;
+	public static boolean editItem(String key, String id, String value) {
+		return InsertQuery(String.format("UPDATE items SET %s='%s' WHERE id='%s';", key, value, id), "inventory");
 	}
 	
-	public boolean removeItem(Item item) {
-		return InsertQuery("DELETE FROM items WHERE id='" + item.getNumber() + "';");
+	public static boolean removeItem(Item item) {
+		return InsertQuery("DELETE FROM items WHERE id='" + item.getNumber() + "';", "inventory");
 	}
 	
-	public boolean insertItem(Item item, File file) {
+	public static boolean insertItem(Item item, File file) {
 		String sql = String.format("INSERT INTO items VALUES(nextval('nextitemid'), '%s', '%s', ?, '%s');", item.getName(), item.getPrice(), item.getStock());
-		return InsertQueryImage(sql, file);
+		return InsertQueryImage(sql, file, "inventory");
 	}
-
-	//Update data
-	/*public void update() {
-		try {
-			connect();
-			c.setAutoCommit(false);
-			stmt = c.createStatement();
-			String sql = "UPDATE items SET price = 5.00 WHERE id='1';";
-			stmt.executeUpdate(sql);
-			c.commit();
-		}catch(Exception e) {
-			error(e);
-		}
-	}*/
 }

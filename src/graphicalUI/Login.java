@@ -58,7 +58,7 @@ public class Login {
 	public static void login() {
 		String userString = username.getText();
 		String passString = password.getText();
-		User user = new UsersSQL().login(userString, passString);
+		User user = UsersSQL.login(userString, passString);
 		if(user != null) Main.login(user);
 		else {
 			box.getChildren().add(1, loginFail);

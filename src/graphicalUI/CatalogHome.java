@@ -1,10 +1,10 @@
 package graphicalUI;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
 
 import application.Main;
 import cartSQL.ItemsSQL;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -18,8 +18,7 @@ import types.Item;
 
 public class CatalogHome {
 	public static Node getNode() {
-		ArrayList<Item> items = new ArrayList<>();
-		items = new ItemsSQL().getAllItems();
+		ObservableList<Item> items = ItemsSQL.getAllItems();
 		
 		FlowPane node = new FlowPane();
 		node.setVgap(10);
