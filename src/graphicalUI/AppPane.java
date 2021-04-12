@@ -28,7 +28,7 @@ public class AppPane {
 			Employee employee = (Employee)user;
 			inventory = new Tab("Inventory Management", InventoryManage.getNode(employee));
 			
-			orders = new Tab("Orders");
+			orders = new Tab("Orders", OrdersUI.getNode());
 			createAccount = new Tab("Create Account", CreateAccountAdvanced.getNode(employee));
 			tabbedPane.getTabs().add(inventory);
 			tabbedPane.getTabs().add(orders);

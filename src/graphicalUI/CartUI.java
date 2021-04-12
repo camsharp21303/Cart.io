@@ -2,6 +2,7 @@ package graphicalUI;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import application.Main;
 import cartSQL.OrdersSQL;
@@ -9,6 +10,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -20,18 +22,26 @@ import types.Item;
 public class CartUI {
 	private static VBox vbox;
 	private static Cart cart;
+	private static Customer customer;
+	private static ArrayList<Item> items;
 	
 	public static Node getNode(Customer customer) {
+		CartUI.customer = customer;
 		cart = new OrdersSQL().getCart(customer);
 		
 		vbox = new VBox();
 		
 		if(cart != null) {
-			ArrayList<Item> items = cart.getItems();
+			items = cart.getItems();
 			
 			for(int i = 0; i < items.size(); i++) {
-				vbox.getChildren().add(
+				if(items.get(i) != null) {
+					vbox.getChildren().add(
 						new ItemView(items.get(i)));
+				}
+				else {
+					cart.removeItem(items.get(i));
+				}
 			}
 		}
 		else {
@@ -47,7 +57,16 @@ public class CartUI {
 	}
 	
 	private static void purchase() {
+		if(cart.getItems().isEmpty()) return;
 		
+		TextInputDialog dialog = new TextInputDialog(customer.getAddress());
+		dialog.setTitle("Confirm");
+		dialog.setHeaderText("Confirm Your Address");
+		
+		Optional<String> result = dialog.showAndWait();
+		if(result.isPresent()) {
+			new OrdersSQL().addOrder(customer, cart.getItems(), result.get());
+		}
 	}
 	
 	public static void addItem(Item item) {
@@ -80,7 +99,7 @@ public class CartUI {
 			image.preserveRatioProperty().set(true);;
 			
 			name = new Label(item.getName());
-			price = new Label(item.getPrice());
+			price = new Label("$"+item.getPrice());
 			delete = new Button("X");
 			delete.setOnAction(e -> deleteItem());
 			

@@ -1,16 +1,15 @@
 package graphicalUI;
 
-import javafx.scene.control.ScrollPane;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 
 import application.Main;
 import cartSQL.ItemsSQL;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
@@ -58,7 +57,7 @@ public class CatalogHome {
 			image.minHeight(175);
 			
 			name = new Label(item.getName());
-			price = new Label(item.getPrice());
+			price = new Label("$"+item.getPrice());
 			addCart = new Button("Add To Cart");
 			addCart.setOnAction(e-> addCart());
 			

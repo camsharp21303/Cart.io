@@ -47,20 +47,20 @@ public class InventoryManage {
 		table.getColumns().add(nameC);
 		
 		priceC = new TableColumn<>("Price");
-		priceC.setCellValueFactory(new PropertyValueFactory<>("price"));
+		priceC.setCellValueFactory(new PropertyValueFactory<>("priceString"));
 		priceC.setCellFactory(TextFieldTableCell.forTableColumn());
 		priceC.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Item,String>>() {
 			@Override
 			public void handle(CellEditEvent<Item, String> arg0) {
 				new ItemsSQL().editItem("price", 
 						arg0.getTableView().getItems().get(arg0.getTablePosition().getRow()).getNumber()
-						, arg0.getNewValue());
+						, arg0.getNewValue().toString());
 			}
 		});
 		table.getColumns().add(priceC);
 		
 		stockC = new TableColumn<>("Stock");
-		stockC.setCellValueFactory(new PropertyValueFactory<>("stock"));
+		stockC.setCellValueFactory(new PropertyValueFactory<>("stockString"));
 		stockC.setCellFactory(TextFieldTableCell.forTableColumn());
 		stockC.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Item,String>>() {
 			@Override
@@ -81,7 +81,8 @@ public class InventoryManage {
 				TableCell<Item, Void> cell = new TableCell<Item, Void>() {
 					private Button del = new Button("Delete"); {
 						del.setOnAction(e -> {
-							
+							new ItemsSQL().removeItem(getTableView().getItems().get(getIndex()));
+							getTableView().getItems().remove(getIndex());
 						});
 					}
 					@Override
@@ -141,9 +142,11 @@ public class InventoryManage {
 	}
 	
 	public static void newItem() {
-		new ItemsSQL().insertItem(new Item(newNameTF.getText(),
-				"", newPriceTF.getText(), Integer.parseInt(newStockTF.getText()), null)
-				, imageFile);
+		new ItemsSQL().insertItem(
+				new Item(newNameTF.getText(),
+				Float.parseFloat(newPriceTF.getText()), 
+				Integer.parseInt(newStockTF.getText()), null),
+				imageFile);
 		ArrayList<Item> items = new ItemsSQL().getAllItems();
 		table.setItems(FXCollections.observableList(items));
 	}

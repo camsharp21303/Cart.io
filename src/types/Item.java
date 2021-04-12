@@ -1,19 +1,20 @@
 package types;
 
 public class Item {
-	private String number, name, lastSold, price, stock;
+	private String number, name;
+	private float price;
+	private int stock;
 	private byte[] image;
 	
-	public Item(String number, String name, String lastSold, String price, int stock, byte[] image) {
-		this(name, lastSold, price, stock, image);
+	public Item(String number, String name, float price, int stock, byte[] image) {
+		this(name, price, stock, image);
 		this.number = number;
 	}
 	
-	public Item(String name, String lastSold, String price, int stock, byte[] image) {
+	public Item(String name, float price, int stock, byte[] image) {
 		this.name = name;
-		this.lastSold = lastSold;
 		this.price = price;
-		this.stock = Integer.toString(stock);
+		this.stock = stock;
 		this.image = image;
 	}
 
@@ -25,28 +26,32 @@ public class Item {
 		this.name = name;
 	}
 
-	public String getLastSold() {
-		return lastSold;
-	}
-
-	public void setLastSold(String lastSold) {
-		this.lastSold = lastSold;
-	}
-
-	public String getPrice() {
+	public float getPrice() {
 		return price;
 	}
-
-	public void setPrice(String price) {
-		this.price = price;
+	
+	public void setPriceString(String price) {
+		this.price = Float.parseFloat(price);
 	}
 
-	public String getStock() {
+	public String getPriceString() {
+		return Float.toString(this.price);
+	}
+	
+	public void setStockString(String stock) {
+		this.stock = Integer.parseInt(stock);
+	}
+	
+	public String getStockString() {
+		return Integer.toString(stock);
+	}
+	
+	public int getStock() {
 		return stock;
 	}
 
 	public void setStock(int stock) {
-		this.stock = Integer.toString(stock);
+		this.stock = stock;
 	}
 
 	public String getNumber() {

@@ -22,8 +22,7 @@ public class ItemsSQL extends ParentSQL {
 				items.add(new Item(
 						results.getString("id"),
 						results.getString("name"),
-						results.getString("lastSold"),
-						results.getString("price"),
+						results.getFloat("price"),
 						results.getInt("stock"),
 						results.getBytes("image")));
 			}
@@ -42,8 +41,7 @@ public class ItemsSQL extends ParentSQL {
 				return new Item(
 						results.getString("id"),
 						results.getString("name"),
-						results.getString("lastSold"),
-						results.getString("price"),
+						results.getFloat("price"),
 						results.getInt("stock"),
 						results.getBytes("image"));
 			}
@@ -70,11 +68,11 @@ public class ItemsSQL extends ParentSQL {
 	}
 	
 	public boolean removeItem(Item item) {
-		return false;
+		return InsertQuery("DELETE FROM items WHERE id='" + item.getNumber() + "';");
 	}
 	
 	public boolean insertItem(Item item, File file) {
-		String sql = String.format("INSERT INTO items VALUES(nextval('nextitemid'), '%s', '%s', '%s', CURRENT_DATE, ?);", item.getName(), item.getPrice(), item.getStock());
+		String sql = String.format("INSERT INTO items VALUES(nextval('nextitemid'), '%s', '%s', ?, '%s');", item.getName(), item.getPrice(), item.getStock());
 		return InsertQueryImage(sql, file);
 	}
 

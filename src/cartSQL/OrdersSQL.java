@@ -6,7 +6,9 @@ import java.util.ArrayList;
 
 import types.Cart;
 import types.Customer;
+import types.Item;
 import types.Order;
+import types.Order.ORDER_STAT;
 
 public class OrdersSQL extends ParentSQL {
 
@@ -21,13 +23,38 @@ public class OrdersSQL extends ParentSQL {
 			ResultSet results = readQuery("SELECT * FROM orders");
 			
 			while(results.next()) {
-				
+				orders.add(new Order(
+						results.getString("id"),
+						results.getString("customerID"),
+						results.getString("total"),
+						results.getString("address"),
+						ORDER_STAT.valueOf(results.getString("status")),
+						results.getArray("items")));
 			}
 			close();
 		} catch (Exception e) {
 			error(e);
 		}
 		return orders;
+	}
+	
+	public void addOrder(Customer customer, ArrayList<Item> items, String address) {
+		try {
+			double total = 0;
+			for(Item i : items) {
+				total += i.getPrice();
+			}
+			
+			connect();
+			PreparedStatement ps = c.prepareStatement(String.format("INSERT INTO orders VALUES(nextval('orderid'), '%s', '%s', ?, %s, '%s');", 
+					customer.getNumber(), Order.ORDER_STAT.Processing.toString(), total, address));
+			ps.setArray(1, c.createArrayOf("char", items.toArray()));
+			ps.executeUpdate();
+			ps.close();
+			c.close();
+		}catch(Exception e) {
+			error(e);
+		}
 	}
 	
 	public void setItems(Customer customer, String[] items) {
