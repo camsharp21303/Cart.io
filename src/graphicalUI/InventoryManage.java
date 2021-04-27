@@ -3,7 +3,7 @@ package graphicalUI;
 import java.io.File;
 
 import application.Main;
-import cartSQL.ItemsSQL;
+import cartSQL.SQLcommands;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -28,155 +28,151 @@ public class InventoryManage {
 	private static File imageFile;
 	private static TableView<Item> table;
 	private static ObservableList<Item> items;
-	
+
 	public static Node getNode(Employee employee) {
 		Button searchB, addItemB, uploadImageB;
 		TableColumn<Item, String> numberC, nameC, priceC, stockC;
-		
+
 		table = new TableView<>();
 		table.setEditable(true);
-		
-		items = ItemsSQL.getAllItems();
-		
+
+		items = SQLcommands.getAllItems();
+
 		numberC = new TableColumn<>("Item Number");
 		numberC.setCellValueFactory(new PropertyValueFactory<>("number"));
 		table.getColumns().add(numberC);
-		
+
 		nameC = new TableColumn<>("Item Name");
 		nameC.setCellValueFactory(new PropertyValueFactory<>("name"));
 		nameC.isEditable();
 		table.getColumns().add(nameC);
-		
+
 		priceC = new TableColumn<>("Price");
 		priceC.setCellValueFactory(new PropertyValueFactory<>("priceString"));
 		priceC.setCellFactory(TextFieldTableCell.forTableColumn());
-		priceC.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Item,String>>() {
+		priceC.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Item, String>>() {
 			@Override
 			public void handle(CellEditEvent<Item, String> arg0) {
-				ItemsSQL.editItem("price", 
-						arg0.getTableView().getItems().get(arg0.getTablePosition().getRow()).getNumber()
-						, arg0.getNewValue().toString());
+				arg0.getTableView().getItems().get(arg0.getTablePosition().getRow()).setPriceString(arg0.getNewValue());
 			}
 		});
 		table.getColumns().add(priceC);
-		
+
 		stockC = new TableColumn<>("Stock");
 		stockC.setCellValueFactory(new PropertyValueFactory<>("stockString"));
 		stockC.setCellFactory(TextFieldTableCell.forTableColumn());
-		stockC.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Item,String>>() {
+		stockC.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Item, String>>() {
 			@Override
 			public void handle(CellEditEvent<Item, String> arg0) {
-				ItemsSQL.editItem("stock", 
-						arg0.getTableView().getItems().get(arg0.getTablePosition().getRow()).getNumber()
-						, arg0.getNewValue());
-				
+				arg0.getTableView().getItems().get(arg0.getTablePosition().getRow()).setStockString(arg0.getNewValue());
 			}
 		});
 		table.getColumns().add(stockC);
-		
+
 		TableColumn<Item, Void> deleteC = new TableColumn<Item, Void>("Delete");
-		Callback<TableColumn<Item, Void>, TableCell<Item, Void>> cellFactory = new Callback<TableColumn<Item,Void>, TableCell<Item,Void>>() {
+		Callback<TableColumn<Item, Void>, TableCell<Item, Void>> cellFactory = new Callback<TableColumn<Item, Void>, TableCell<Item, Void>>() {
 
 			@Override
 			public TableCell<Item, Void> call(TableColumn<Item, Void> arg0) {
 				TableCell<Item, Void> cell = new TableCell<Item, Void>() {
-					private Button del = new Button("Delete"); {
+					private Button del = new Button("Delete");
+					{
 						del.setOnAction(e -> {
-							ItemsSQL.removeItem(getTableView().getItems().get(getIndex()));
+							getTableView().getItems().get(getIndex()).deleteItem();
 							getTableView().getItems().remove(getIndex());
 						});
 					}
+
 					@Override
-                    public void updateItem(Void item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
-                        } else {
-                            setGraphic(del);
-                        }
-                    }
-                };
+					public void updateItem(Void item, boolean empty) {
+						super.updateItem(item, empty);
+						if (empty) {
+							setGraphic(null);
+						} else {
+							setGraphic(del);
+						}
+					}
+				};
 				return cell;
 			}
 		};
 		deleteC.setCellFactory(cellFactory);
 		table.getColumns().add(deleteC);
-		
+
 		table.setItems(items);
-		
+
 		uploadImageB = new Button("Upload Image");
 		uploadImageB.setOnAction(e -> chooseImage());
-		
+
 		newNameTF = new TextField();
 		newNameTF.setPromptText("Item Name");
-		
+
 		newPriceTF = new TextField();
 		newPriceTF.setPromptText("Item Price");
-		
+
 		newStockTF = new TextField();
 		newStockTF.setPromptText("Item Stock");
-		
+
 		addItemB = new Button("Add Item");
 		addItemB.setOnAction(e -> newItem());
-		
+
 		HBox bottom = new HBox(uploadImageB, newNameTF, newPriceTF, newStockTF, addItemB);
 		bottom.setSpacing(30);
-		
+
 		searchTF = new TextField();
 		searchTF.setPromptText("Item ID/name");
-		
+
 		searchB = new Button("Search");
 		searchB.setOnAction(e -> search());
 		searchB.setDefaultButton(true);
-		
+
 		HBox top = new HBox(searchTF, searchB);
 		top.setSpacing(30);
-		
+
 		BorderPane scene = new BorderPane();
 		scene.setCenter(table);
 		scene.setBottom(bottom);
 		scene.setTop(top);
-		
+
 		return scene;
 	}
-	
+
 	private static void search() {
 		String query = searchTF.getText().toUpperCase();
 		int index = -1;
-		
-		if(query.contains("[a-zA-Z]+")) {
-			for(int i = 0; i < table.getItems().size(); i++) {
-				if(table.getItems().get(i).getName().toUpperCase().contains(query)) {
+
+		for (int i = table.getSelectionModel().getSelectedIndex()+1; i < table.getItems().size(); i++) {
+			if (table.getItems().get(i).getName().toUpperCase().contains(query)) {
+				index = i;
+				break;
+			}
+		}
+
+		if (index == -1) {
+			for (int i = table.getSelectionModel().getSelectedIndex()+1; i < table.getItems().size(); i++) {
+				if (table.getItems().get(i).getNumber().toUpperCase().contains(query)) {
 					index = i;
 					break;
 				}
 			}
 		}
-		else {
-			for(int i = 0; i < table.getItems().size(); i++) {
-				if(table.getItems().get(i).getNumber().toUpperCase().contains(query)) {
-					index = i;
-					break;
-				}
-			}
-		}
-		
-		if(index >= 0) {
+
+		if (index >= 0) {
 			table.getSelectionModel().select(index);
 		}
+		else {
+			table.getSelectionModel().clearSelection();
+		}
 	}
-	
+
 	private static void chooseImage() {
 		imageFile = new FileChooser().showOpenDialog(Main.getStage());
 	}
-	
+
 	public static void newItem() {
-		ItemsSQL.insertItem(
-				new Item(newNameTF.getText(),
-				Float.parseFloat(newPriceTF.getText()), 
-				Integer.parseInt(newStockTF.getText()), null),
-				imageFile);
-		ObservableList<Item> items = ItemsSQL.getAllItems();
+		new Item(newNameTF.getText(), Float.parseFloat(newPriceTF.getText()), Integer.parseInt(newStockTF.getText()))
+				.commit(imageFile);
+		ObservableList<Item> items = SQLcommands.getAllItems();
 		table.setItems(FXCollections.observableList(items));
 	}
 }

@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import application.Main;
-import cartSQL.UsersSQL;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,7 +24,7 @@ public class MyAccount {
 	private ImageView accountImage;
 	private File imageFile;
 	private User user;
-	
+
 	public MyAccount(User user) {
 		this.user = user;
 		node = new BorderPane();
@@ -33,56 +32,53 @@ public class MyAccount {
 		numberL = new Label("Account Number: #" + user.getNumber());
 		emailL = new Label("Email: " + user.getEmail());
 		phoneL = new Label("Phone: " + user.getPhone());
-		
-		//editEmailB = new Button("Edit");
-		//editPhoneB = new Button("Edit");
-		
-		if(user.getImage() != null) {
+
+		// editEmailB = new Button("Edit");
+		// editPhoneB = new Button("Edit");
+
+		if (user.getImage() != null) {
 			accountImage = new ImageView(new Image(new ByteArrayInputStream(user.getImage())));
-		}
-		else {
-			System.out.println("No Imag Found");
+		} else {
 			accountImage = new ImageView(new Image(Main.class.getResourceAsStream("default.png")));
 		}
 		accountImage.setFitHeight(150);
 		accountImage.setFitWidth(150);
-		
+
 		editImageB = new Button("Edit Image");
 		editImageB.setOnAction(e -> changeImage());
-		
+
 		logoutB = new Button("Logout");
 		logoutB.setOnAction(e -> Main.logout());
-		
+
 		node.setBottom(logoutB);
-		
+
 		VBox userInfo;
-		if(user instanceof Customer) {
-			addressL = new Label("Address: " + ((Customer)user).getAddress());
+		if (user instanceof Customer) {
+			addressL = new Label("Address: " + ((Customer) user).getAddress());
 			userInfo = new VBox(nameL, numberL, addressL, emailL, phoneL);
-		}
-		else {
+		} else {
 			userInfo = new VBox(nameL, numberL, emailL, phoneL);
 		}
-		
+
 		VBox imageViewer = new VBox(accountImage, editImageB);
-		
+
 		node.setLeft(imageViewer);
 		node.setCenter(userInfo);
 	}
-	
+
 	public void changeImage() {
 		FileChooser fileChoose = new FileChooser();
 		imageFile = fileChoose.showOpenDialog(Main.getStage());
 		try {
 			FileInputStream stream = new FileInputStream(imageFile);
 			accountImage.setImage(new Image(stream));
-			UsersSQL.updateAccountImage(user, imageFile);
-		}catch(FileNotFoundException e){
+			user.setImage(imageFile);
+		} catch (FileNotFoundException e) {
 			System.out.println("File not found");
 		}
-		
+
 	}
-	
+
 	public Node getScene() {
 		return node;
 	}

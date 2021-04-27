@@ -1,11 +1,16 @@
 package types;
 
-public abstract class User {
+import java.io.File;
+
+import cartSQL.ParentSQL;
+
+public abstract class User extends ParentSQL {
 	protected String number, username;
 	protected String fname, lname, phone, email;
 	private byte[] image;
-	
-	protected User(String number, String fname, String lname, String username, String phone, String email, byte[] image){
+
+	protected User(String number, String fname, String lname, String username, String phone, String email,
+			byte[] image) {
 		this.number = number;
 		this.fname = fname;
 		this.lname = lname;
@@ -54,12 +59,39 @@ public abstract class User {
 	public String getUsername() {
 		return username;
 	}
-	
+
 	public byte[] getImage() {
 		return image;
 	}
-	
-	public void setImage(byte[] image) {
-		this.image = image;
+
+	public boolean setImage(File image) {
+		if (this instanceof Customer) {
+			return updateImage("customers", this.getNumber(), image);
+		} else if (this instanceof Employee) {
+			return updateImage("employees", this.getNumber(), image);
+		}
+		return false;
+	}
+
+	public boolean commit(String password, File imageFile) {
+		String query = "";
+		if (this instanceof Employee) {
+			query = String.format(
+					"INSERT INTO employees VALUES(nextval('nextemployee'), '%s', '%s', '%s', '%s', '%s', '%s', '%s', ?);",
+					getFname(), getLname(), getUsername(), getPhone(), getEmail(), password,
+					((Employee) this).getPosition().toString().toLowerCase());
+		} else {
+			query = String.format(
+					"INSERT INTO customers VALUES(nextval('nextemployee'), '%s', '%s', '%s', '%s', '%s', '%s', '%s', ?);",
+					getFname(), getLname(), getUsername(), getPhone(), getEmail(), password,
+					((Customer) this).getAddress());
+		}
+
+		return InsertQueryImage(query, imageFile);
+	}
+
+	@Override
+	protected String getDatabase() {
+		return "users";
 	}
 }
